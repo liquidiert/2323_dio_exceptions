@@ -1,3 +1,6 @@
+import 'package:dio/dio.dart';
+import 'package:dio_exceptions/models/test.dart';
+import 'package:dio_exceptions/models/test_entry.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -116,10 +119,21 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _makeFaultyDioRequest,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  _makeFaultyDioRequest() {
+    final dio = Dio();
+    dio.interceptors.add(LogInterceptor(requestBody: true));
+    dio.post("http://localhost:8000",
+        data: const Test(
+          "Hi!",
+          [TestEntry("Moin!", 0)],
+        ),
+        options: Options(headers: {"content-type": "application/json"}));
   }
 }
